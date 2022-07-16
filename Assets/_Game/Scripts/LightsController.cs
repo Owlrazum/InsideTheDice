@@ -1,18 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LightsController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    private float _speedDeg;
+
+    private Transform _primary;
+    private Transform _secondary;
+
+    private void Awake()
     {
-        
+        _primary = transform.GetChild(0);
+        _secondary = transform.GetChild(1);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        float angleDelta = _speedDeg * Time.deltaTime;
+        _primary.RotateAround(Vector3.zero, Vector3.up, angleDelta);
+        _secondary.RotateAround(Vector3.zero, Vector3.up, angleDelta);
     }
 }

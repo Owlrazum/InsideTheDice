@@ -22,6 +22,8 @@ public class BeizerSegment : MonoBehaviour
         par.target = transform.GetChild(3).position;
     }
 
+    public Vector3 Target { get { return par.target; } }
+
     public Vector3 GetLerpedPos(float lerpParam)
     {
         Vector3 toReturn = CustomMath.ComputeCubicBeizerPos(par, lerpParam); ;
