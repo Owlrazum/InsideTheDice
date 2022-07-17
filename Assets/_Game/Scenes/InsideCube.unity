@@ -226,9 +226,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4466642481419283372, guid: 270c84d6faae34b428b6fc73afa5cacd, type: 3}
+      propertyPath: _speedDeg
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4466642481419283374, guid: 270c84d6faae34b428b6fc73afa5cacd, type: 3}
       propertyPath: m_Name
       value: LightsController
+      objectReference: {fileID: 0}
+    - target: {fileID: 4466642481419283374, guid: 270c84d6faae34b428b6fc73afa5cacd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4466642481419283375, guid: 270c84d6faae34b428b6fc73afa5cacd, type: 3}
       propertyPath: m_RootOrder
