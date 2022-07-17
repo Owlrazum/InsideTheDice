@@ -139,6 +139,7 @@ public class GameController : MonoBehaviour
     {
         _gameState = GameStateType.MainMenu;
         ApplicationDelegatesContainer.ShouldFinishLoadingNextScene();
+        StartCoroutine(OnNextFrameStartLoadingOnceMore());
     }
 
     private IEnumerator OnNextFrameStartLoadingOnceMore()
