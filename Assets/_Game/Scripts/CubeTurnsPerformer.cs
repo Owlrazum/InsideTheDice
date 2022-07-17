@@ -142,19 +142,19 @@ public class CubeTurnsPerformer : MonoBehaviour
             { 
                 case CubeTurnType.Backward:
                     targetPos += -Vector3.forward * _turnDistance;
-                    targetRot *= Quaternion.Euler(-Vector3.right * 90);
+                    targetRot = Quaternion.Euler(-Vector3.right * 90) * targetRot;
                     break;
                 case CubeTurnType.Forward:
                     targetPos += Vector3.forward * _turnDistance;
-                    targetRot *= Quaternion.Euler(Vector3.right * 90);
+                    targetRot = Quaternion.Euler(Vector3.right * 90) * targetRot;
                     break;
                 case CubeTurnType.Left:
                     targetPos += -Vector3.right * _turnDistance;
-                    targetRot *= Quaternion.Euler(-Vector3.forward * 90);
+                    targetRot = Quaternion.Euler(Vector3.forward * 90) * targetRot;
                     break;
                 case CubeTurnType.Right:
                     targetPos += Vector3.right * _turnDistance;
-                    targetRot *= Quaternion.Euler(Vector3.forward * 90);
+                    targetRot = Quaternion.Euler(-Vector3.forward * 90) * targetRot;
                     break;
             }
 
@@ -206,21 +206,21 @@ public class CubeTurnsPerformer : MonoBehaviour
             
             switch (currentTurn)
             { 
-                case CubeTurnType.Backward:
+                 case CubeTurnType.Backward:
                     targetPos += -Vector3.forward * _turnDistance;
-                    targetRot *= Quaternion.Euler(-Vector3.right * 90);
+                    targetRot = Quaternion.Euler(-Vector3.right * 90) * targetRot;
                     break;
                 case CubeTurnType.Forward:
                     targetPos += Vector3.forward * _turnDistance;
-                    targetRot *= Quaternion.Euler(Vector3.right * 90);
+                    targetRot = Quaternion.Euler(Vector3.right * 90) * targetRot;
                     break;
                 case CubeTurnType.Left:
                     targetPos += -Vector3.right * _turnDistance;
-                    targetRot *= Quaternion.Euler(-Vector3.forward * 90);
+                    targetRot = Quaternion.Euler(Vector3.forward * 90) * targetRot;
                     break;
                 case CubeTurnType.Right:
                     targetPos += Vector3.right * _turnDistance;
-                    targetRot *= Quaternion.Euler(Vector3.forward * 90);
+                    targetRot = Quaternion.Euler(-Vector3.forward * 90) * targetRot;
                     break;
             }
 

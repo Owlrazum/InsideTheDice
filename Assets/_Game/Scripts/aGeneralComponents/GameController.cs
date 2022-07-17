@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
+using Orazum.Utilities;
+
 public enum GameStateType
 {
     MainMenu,
@@ -175,10 +177,12 @@ public class GameController : MonoBehaviour
     {
         int turnsCount = Random.Range(_minimumTurnCount, _maximumTurnCount + 1);
         _generatedSequence = new CubeTurnType[turnsCount];
+        int prev = 3;
         for (int i = 0; i < turnsCount; i++)
         {
-            int turn = Random.Range(0, 4);
+            int turn = IndexUtilities.RandomRangeWithExlusion(0, 4, 3);
             _generatedSequence[i] = (CubeTurnType)turn;
+            prev = turn;
         }
     }
 }
