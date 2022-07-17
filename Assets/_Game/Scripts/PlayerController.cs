@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using UnityEngine;
 
+using Orazum.Utilities;
+
 public enum SwitchType
 { 
     ToBottom  = 0,
@@ -111,12 +113,12 @@ public class PlayerController : MonoBehaviour
             if (lerpParam < 0.5f && switchType == 2)
             {
                 transform.localRotation = Quaternion.LookRotation(new Vector3(0, 5, 0) - transform.position, _middleTargetUp);
-                transform.localEulerAngles = CustomMath.Round(transform.localEulerAngles);
+                transform.localEulerAngles = MathUtilities.Round(transform.localEulerAngles);
             }
             else
             { 
                 transform.localRotation = Quaternion.LookRotation(new Vector3(0, 5, 0) - transform.position, _currentTargetUp);
-                transform.localEulerAngles = CustomMath.Round(transform.localEulerAngles);
+                transform.localEulerAngles = MathUtilities.Round(transform.localEulerAngles);
             }
             GameDelegatesContainer.EventSwitchSideLerpParam?.Invoke(lerpParam);
             yield return null;
