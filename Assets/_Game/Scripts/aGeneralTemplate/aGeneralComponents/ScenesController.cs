@@ -15,16 +15,16 @@ public class ScenesController : MonoBehaviour
     {
         sceneCount = SceneManager.sceneCountInBuildSettings;
 
-        GeneralEventsContainer.GameStart += LoadSavedScene;
-        GeneralEventsContainer.LevelComplete += StartLoadingNextScene;
-        GeneralEventsContainer.ShouldLoadNextSceneLevel += FinishLoadingSceneLevel;
+        // GeneralEventsContainer.GameStart += LoadSavedScene;
+        // GeneralEventsContainer.LevelComplete += StartLoadingNextScene;
+        // GeneralEventsContainer.ShouldLoadNextSceneLevel += FinishLoadingSceneLevel;
     }
 
     private void OnDestroy()
     {
-        GeneralEventsContainer.GameStart -= LoadSavedScene;
-        GeneralEventsContainer.LevelComplete -= StartLoadingNextScene;
-        GeneralEventsContainer.ShouldLoadNextSceneLevel -= FinishLoadingSceneLevel;
+        // GeneralEventsContainer.GameStart -= LoadSavedScene;
+        // GeneralEventsContainer.LevelComplete -= StartLoadingNextScene;
+        // GeneralEventsContainer.ShouldLoadNextSceneLevel -= FinishLoadingSceneLevel;
     }
 
     private void LoadSavedScene()
@@ -40,23 +40,23 @@ public class ScenesController : MonoBehaviour
 
     private void StartLoadingNextScene(int useless)
     {
-        if (!GeneralQueriesContainer.QueryAreAllLevelsPassed())
-        {
-            int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-            if (nextSceneIndex >= sceneCount)
-            {
-                GeneralEventsContainer.AllLevelsWerePassed?.Invoke();
-                StartLoadingRandomScene();
-                return;
-            }
-            loadingScene = SceneManager.LoadSceneAsync(nextSceneIndex);
-            PlayerPrefs.SetInt(pref_LAST_SCENE_LEVEL_INDEX, nextSceneIndex);
-            loadingScene.allowSceneActivation = false;
-        }
-        else
-        {
-            StartLoadingRandomScene();
-        }
+        // if (!GeneralQueriesContainer.QueryAreAllLevelsPassed())
+        // {
+        //     int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        //     if (nextSceneIndex >= sceneCount)
+        //     {
+        //         GeneralEventsContainer.AllLevelsWerePassed?.Invoke();
+        //         StartLoadingRandomScene();
+        //         return;
+        //     }
+        //     loadingScene = SceneManager.LoadSceneAsync(nextSceneIndex);
+        //     PlayerPrefs.SetInt(pref_LAST_SCENE_LEVEL_INDEX, nextSceneIndex);
+        //     loadingScene.allowSceneActivation = false;
+        // }
+        // else
+        // {
+        //     StartLoadingRandomScene();
+        // }
     }
 
     private void StartLoadingRandomScene()

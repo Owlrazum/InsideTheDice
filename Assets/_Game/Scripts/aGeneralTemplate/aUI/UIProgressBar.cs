@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-using DG.Tweening;
-
 /// <summary>
 /// Should be placed on separate canvas. Good practice.
 /// </summary>
@@ -46,7 +44,7 @@ public class UIProgressBar : UIBaseFadingCanvas
     {
         float newScaleX = progressBarTransform.localScale.x +
             scaleDelta;
-        progressBarTransform.DOScaleX(newScaleX, 1);
+        // progressBarTransform.DOScaleX(newScaleX, 1);
     }
 
     private void Reset()
