@@ -40,6 +40,8 @@ public class CubeTurnsPerformer : MonoBehaviour
         ApplicationDelegatesContainer.LevelCubeTurnsStart += OnLevelCubeTurnsStart;
         ApplicationDelegatesContainer.LevelInsideCubeStart += OnLevelInsideCubeStart;
 
+        ApplicationDelegatesContainer.LevelFinish += OnLevelFinish;
+
         _levelCubePosition = _levelCubeTransform.localPosition;
     }
 
@@ -50,6 +52,8 @@ public class CubeTurnsPerformer : MonoBehaviour
         ApplicationDelegatesContainer.MainMenuLevelStart -= OnMainMenuLevelStart;
         ApplicationDelegatesContainer.LevelCubeTurnsStart -= OnLevelCubeTurnsStart;
         ApplicationDelegatesContainer.LevelInsideCubeStart -= OnLevelInsideCubeStart;
+
+        ApplicationDelegatesContainer.LevelFinish -= OnLevelFinish;
     }
 
     private void OnShouldStartTransitionToCubeTurns()
@@ -173,5 +177,62 @@ public class CubeTurnsPerformer : MonoBehaviour
         transform.localPosition = _levelCubePosition;
         transform.localRotation = Quaternion.identity;
         _renderer.enabled = false;
+    }
+
+    private void OnLevelFinish()
+    { 
+
+    }
+
+    private IEnumerator FinishingSequence()
+    {
+        int currentStep = -1;
+        float lerpParam = 0;
+        while (true)
+        {
+            Vector3 initialPos = _levelCubeTransform.localPosition;
+            Vector3 targetPos = initialPos;
+            Quaternion initialRot = _levelCubeTransform.localRotation;
+            Quaternion targetRot = initialRot;
+
+            currentStep++;
+            if (currentStep >= _levelDesc.CubeTurnSequence.Length)
+            {
+                GameDelegatesContainer.EventCubeArrivedAtDestination();
+            }
+
+            CubeTurnType currentTurn = _levelDesc.CubeTurnSequence[currentStep];
+            
+            switch (currentTurn)
+            { 
+                case CubeTurnType.Backward:
+                    targetPos += -Vector3.forward * _turnDistance;
+                    targetRot *= Quaternion.Euler(-Vector3.right * 90);
+                    break;
+                case CubeTurnType.Forward:
+                    targetPos += Vector3.forward * _turnDistance;
+                    targetRot *= Quaternion.Euler(Vector3.right * 90);
+                    break;
+                case CubeTurnType.Left:
+                    targetPos += -Vector3.right * _turnDistance;
+                    targetRot *= Quaternion.Euler(-Vector3.forward * 90);
+                    break;
+                case CubeTurnType.Right:
+                    targetPos += Vector3.right * _turnDistance;
+                    targetRot *= Quaternion.Euler(Vector3.forward * 90);
+                    break;
+            }
+
+            lerpParam = 0;
+            while (lerpParam < 1)
+            {
+                lerpParam += _turnSpeedLerp * Time.deltaTime;
+                _levelCubeTransform.localPosition = Vector3.Lerp(initialPos, targetPos, MathUtilities.EaseInOut(lerpParam));
+                _levelCubeTransform.localRotation = Quaternion.Slerp(initialRot, targetRot, MathUtilities.EaseInOut(lerpParam));
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(_turnCompleteWaitTime);
+        }
     }
 }

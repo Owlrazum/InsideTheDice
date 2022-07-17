@@ -3,13 +3,11 @@ using UnityEngine;
 
 public static class ApplicationDelegatesContainer
 { 
-    public static Action ShouldLoadNextScene;
-
-    public static Action ShouldStartLoadingNextScene;
+    public static Action<int> ShouldStartLoadingNextScene;
     public static Action EventStartedLoadingNextScene;
     public static Action ShouldFinishLoadingNextScene;
 
-    public static Action EventBeforeLoadingNextScene;
+    public static Action EventBeforeLoadingGameScene;
 
     public static Action ShouldLoadMainMenu;
 
@@ -25,4 +23,9 @@ public static class ApplicationDelegatesContainer
     public static Action<LevelDescriptionSO> LevelCubeTurnsStart;
     public static Action LevelInsideCubeStart;
     public static Action LevelCubeTurnsEnd;
+
+    // When camera is at cube turns
+    public static Action LevelFinish;
+
+    public static Action ReturnMainMenuPressed;
 }

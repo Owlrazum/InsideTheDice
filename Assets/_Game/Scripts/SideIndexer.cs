@@ -19,19 +19,31 @@ public class SideIndexer : MonoBehaviour
     [SerializeField]
     private DiceSymbol[] _diceSymbolPrefabs;
 
+    private HashSet<int> _placedDotCounts;
+
     private void Awake()
     {
+        _placedDotCounts = new HashSet<int>();
+
         InputDelegatesContainer.SideSymbolPlacement += OnSideSymbolPlacement;
+        GameDelegatesContainer.FuncIsDotCountAlreadyPlaced += IsDotCountAlreadyPlaced;
     }
 
     private void OnDestroy()
     { 
         InputDelegatesContainer.SideSymbolPlacement -= OnSideSymbolPlacement;
+        GameDelegatesContainer.FuncIsDotCountAlreadyPlaced -= IsDotCountAlreadyPlaced;
+    }
+
+    private bool IsDotCountAlreadyPlaced(int dotCountToCheck)
+    {
+        return _placedDotCounts.Contains(dotCountToCheck);
     }
 
     private void OnSideSymbolPlacement(int dotCount)
     {
         int prefabIndex = dotCount - 1;
+        _placedDotCounts.Add(dotCount);
         StartCoroutine(SpawnSequence(prefabIndex));
     }
 
@@ -50,6 +62,11 @@ public class SideIndexer : MonoBehaviour
             lerpParam += _lerpSpeed * Time.deltaTime;
             toMove.position = Vector3.Lerp(_spawnPos, targetPos, MathUtilities.EaseInOut(lerpParam));
             yield return null;
+        }
+
+        if (_placedDotCounts.Count == 6)
+        {
+            GameDelegatesContainer.EventAllDotsArePlaced();
         }
     }
 }

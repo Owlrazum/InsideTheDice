@@ -13,17 +13,18 @@ public enum SwitchType
     ToRight   = 4
 }
 
+public enum PlayerStateType
+{
+    Idle,
+    SwitchingSide
+}
+
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     private float _switchSpeedLerp;
 
-    private enum StateType
-    {
-        Idle,
-        SwitchingSide
-    }
-    private StateType _state;
+    private PlayerStateType _state;
 
     private KeyCode[] _switchTypesKeyCodes;
 
@@ -37,9 +38,6 @@ public class PlayerController : MonoBehaviour
     private Vector3Int _currentTargetUp;
     private Vector3Int _middleTargetUp;
 
-    private SideType _currentSide;
-    private int _currentUp;
-
     private void Awake()
     {
         _switchTypesKeyCodes = new KeyCode[] { KeyCode.S, KeyCode.Space, KeyCode.W, KeyCode.A, KeyCode.D };
@@ -49,18 +47,31 @@ public class PlayerController : MonoBehaviour
         }
 
         _currentTargetUp = ToVector3Int(transform.up);
-        _currentSide = SideType.Backward;
+
+        GameDelegatesContainer.FuncPlayerPos += GetPlayerPos;
+        GameDelegatesContainer.FuncPlayerState += GetPlayerState;
     }
 
     private void OnDestroy()
     { 
+        GameDelegatesContainer.FuncPlayerPos -= GetPlayerPos;
+        GameDelegatesContainer.FuncPlayerState -= GetPlayerState;
+    }
 
+    private Vector3 GetPlayerPos()
+    {
+        return transform.position;
+    }
+
+    private PlayerStateType GetPlayerState()
+    {
+        return _state;
     }
 
     private void Update()
     {
         if (GameDelegatesContainer.FuncGameState() == GameStateType.InsideCube &&
-             _state == StateType.Idle)
+             _state == PlayerStateType.Idle)
         {
             InputUpdate();
         }
@@ -103,7 +114,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator SwitchSequence(int switchType)
     {
         GameDelegatesContainer.EventSwitchSideStart?.Invoke((SwitchType)switchType);
-        _state = StateType.SwitchingSide;
+        _state = PlayerStateType.SwitchingSide;
 
         float lerpParam = 0;
         while (lerpParam < 1)
@@ -146,12 +157,7 @@ public class PlayerController : MonoBehaviour
         }
         _beizerParent.Rotate(toRotate, Space.World);
 
-        int prevUp = _currentUp;
-        _currentUp = PlayerLookUpTables.UpChange[(int) _currentSide, prevUp, switchType];
-        _currentSide = (SideType)PlayerLookUpTables.SideConnections[(int)_currentSide, prevUp, switchType];
-
-        _state = StateType.Idle;
-        GameDelegatesContainer.EventSwitchSideEnd?.Invoke(_currentSide);
+        _state = PlayerStateType.Idle;
     }
 
     private int SwitchTypeToSideIndex(int index)

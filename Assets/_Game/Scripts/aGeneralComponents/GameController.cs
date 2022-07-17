@@ -7,7 +7,9 @@ public enum GameStateType
     MainMenuTransition,
     Transition,
     CubeTurns,
-    InsideCube
+    InsideCube,
+    FinishingLevel,
+    Finished
 }
 
 public class GameController : MonoBehaviour
@@ -29,6 +31,12 @@ public class GameController : MonoBehaviour
         InputDelegatesContainer.CubeTurnsCommand += OnCubeTurnsCommand;
         GameDelegatesContainer.EventTransitionToInsideCubeEnd += OnTransitionToInsideCubeEnd;
         GameDelegatesContainer.EventTransitionToCubeTurnsEnd += OnTransitionToCubeTurnsEnd;
+
+        GameDelegatesContainer.EventAllDotsArePlaced += OnAllDotsArePlaced;
+
+        GameDelegatesContainer.EventCubeArrivedAtDestination += OnCubeArrivedAtDestination;
+
+        ApplicationDelegatesContainer.ReturnMainMenuPressed += OnReturnMainMenuPressed;
         DontDestroyOnLoad(gameObject);
     }
 
@@ -41,11 +49,17 @@ public class GameController : MonoBehaviour
         InputDelegatesContainer.CubeTurnsCommand -= OnCubeTurnsCommand;
         GameDelegatesContainer.EventTransitionToInsideCubeEnd -= OnTransitionToInsideCubeEnd;
         GameDelegatesContainer.EventTransitionToCubeTurnsEnd -= OnTransitionToCubeTurnsEnd;
+
+        GameDelegatesContainer.EventAllDotsArePlaced -= OnAllDotsArePlaced;
+
+        GameDelegatesContainer.EventCubeArrivedAtDestination -= OnCubeArrivedAtDestination;
+
+        ApplicationDelegatesContainer.ReturnMainMenuPressed -= OnReturnMainMenuPressed;
     }
 
     private void Start()
     {
-        ApplicationDelegatesContainer.ShouldStartLoadingNextScene();
+        ApplicationDelegatesContainer.ShouldStartLoadingNextScene(1);
     }
 
     private GameStateType GetGameState()
@@ -55,7 +69,7 @@ public class GameController : MonoBehaviour
 
     private void OnGameStartButtonPressed()
     {
-        ApplicationDelegatesContainer.EventBeforeLoadingNextScene();
+        ApplicationDelegatesContainer.EventBeforeLoadingGameScene();
         ApplicationDelegatesContainer.ShouldFinishLoadingNextScene();
         
         StartCoroutine(OnNextFrameStartLevel());
@@ -91,10 +105,14 @@ public class GameController : MonoBehaviour
             _gameState = GameStateType.CubeTurns;
             ApplicationDelegatesContainer.MainMenuLevelStart(_gameDescription.Levels[_currentLevel]);
         }
-        else
+        else if (_gameState == GameStateType.Transition)
         { 
             _gameState = GameStateType.CubeTurns;
             ApplicationDelegatesContainer.LevelCubeTurnsStart(_gameDescription.Levels[_currentLevel]);
+        }
+        else if (_gameState == GameStateType.FinishingLevel)
+        {
+            ApplicationDelegatesContainer.LevelFinish();
         }
     }
 
@@ -102,5 +120,24 @@ public class GameController : MonoBehaviour
     {
         _gameState = GameStateType.InsideCube;
         ApplicationDelegatesContainer.LevelInsideCubeStart();
+    }
+
+    private void OnAllDotsArePlaced()
+    {
+        _gameState = GameStateType.FinishingLevel;
+        ApplicationDelegatesContainer.ShouldStartTransitionToCubeTurns();
+    }
+
+    private void OnCubeArrivedAtDestination()
+    {
+        _gameState = GameStateType.Finished;
+        UIDelegatesContainer.ShowEndLevelCanvas();
+        ApplicationDelegatesContainer.ShouldStartLoadingNextScene(0);
+    }
+
+    private void OnReturnMainMenuPressed()
+    {
+        _gameState = GameStateType.MainMenu;
+        ApplicationDelegatesContainer.ShouldFinishLoadingNextScene();
     }
 }

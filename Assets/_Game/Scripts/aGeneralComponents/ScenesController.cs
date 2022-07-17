@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using Orazum.UI;
-
 public class ScenesController : MonoBehaviour
 {
 #if UNITY_EDITOR
@@ -10,44 +8,27 @@ public class ScenesController : MonoBehaviour
     private int _sceneIndexToTest;
 #endif
 
-    private int _currentSceneIndex;
     private AsyncOperation _loadingScene;
 
     private void Awake()
     {
-        _currentSceneIndex = 0;
-
-        ApplicationDelegatesContainer.ShouldLoadNextScene += LoadNextScene;
         ApplicationDelegatesContainer.ShouldStartLoadingNextScene += StartLoadingNextScene;
         ApplicationDelegatesContainer.ShouldFinishLoadingNextScene += FinishLoadingScene;
-
-        UIDelegatesContainer.EventExitToMainMenuPressed += LoadMainMenuScene;
-        UIDelegatesContainer.EventContinueButtonPressed += FinishLoadingScene;
 
         UIDelegatesContainer.FuncSceneLoadingProgress += GetSceneLoadingProgress;
     }
 
     private void OnDestroy()
     { 
-        ApplicationDelegatesContainer.ShouldLoadNextScene -= LoadNextScene;
         ApplicationDelegatesContainer.ShouldStartLoadingNextScene -= StartLoadingNextScene;
         ApplicationDelegatesContainer.ShouldFinishLoadingNextScene -= FinishLoadingScene;
-
-        UIDelegatesContainer.EventExitToMainMenuPressed -= LoadMainMenuScene;
-        UIDelegatesContainer.EventContinueButtonPressed -= FinishLoadingScene;
 
         UIDelegatesContainer.FuncSceneLoadingProgress -= GetSceneLoadingProgress;
     }
 
-    private void LoadNextScene()
-    {
-        _currentSceneIndex++;
-        SceneManager.LoadScene(_currentSceneIndex);
-    }
-
-    private void StartLoadingNextScene()
+    private void StartLoadingNextScene(int sceneIndex)
     { 
-        _loadingScene = SceneManager.LoadSceneAsync(++_currentSceneIndex);
+        _loadingScene = SceneManager.LoadSceneAsync(sceneIndex);
         _loadingScene.allowSceneActivation = false;
         ApplicationDelegatesContainer.EventStartedLoadingNextScene?.Invoke();
     }
@@ -60,11 +41,5 @@ public class ScenesController : MonoBehaviour
     private void FinishLoadingScene()
     { 
         _loadingScene.allowSceneActivation = true;
-    }
-
-    private void LoadMainMenuScene()
-    {
-        _currentSceneIndex = 0;
-        SceneManager.LoadScene(_currentSceneIndex);
     }
 }

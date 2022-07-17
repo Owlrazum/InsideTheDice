@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(BoxCollider))]
 public class DiceSide : MonoBehaviour
 { 
     public Vector3 Position { get { return transform.position; } }

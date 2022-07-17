@@ -39,55 +39,125 @@ public class DiceCube : MonoBehaviour
 
         _currentSide = SideType.Backward;
 
-        GameDelegatesContainer.EventSwitchSideEnd += OnSwitchSideEnd;
-        
-        GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols += GetCurrentSideDotCount;
         InputDelegatesContainer.SideSymbolPlacement += OnSideSymbolPlacement;
+        GameDelegatesContainer.FuncCurrentSideDotCount += GetCurrentSideDotCount;
         GameDelegatesContainer.FuncCurrentSidePos += GetCurrentSidePos;
-        GameDelegatesContainer.FuncCurrentSideInsidePos += GetCurrentSideInsidePos;
-        GameDelegatesContainer.FuncCurrentSideOutsidePos += GetCurrentSideOutsidePos;
 
+       // GameDelegatesContainer.EventCubeArrivedAtDestination += OnCubeArrivedAtDestination;
     }
 
     private void OnDestroy()
     { 
-        GameDelegatesContainer.EventSwitchSideEnd -= OnSwitchSideEnd;
-
-        GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols -= GetCurrentSideDotCount;
         InputDelegatesContainer.SideSymbolPlacement -= OnSideSymbolPlacement;
+        GameDelegatesContainer.FuncCurrentSideDotCount -= GetCurrentSideDotCount;
         GameDelegatesContainer.FuncCurrentSidePos -= GetCurrentSidePos;
-        GameDelegatesContainer.FuncCurrentSideInsidePos -= GetCurrentSideInsidePos;
-        GameDelegatesContainer.FuncCurrentSideOutsidePos -= GetCurrentSideOutsidePos;
 
-    }
-
-    private void OnSwitchSideEnd(SideType newSide)
-    {
-        _currentSide = newSide;
-    }
-
-    private Vector3 GetCurrentSidePos()
-    {
-        return _diceSides[(int)_currentSide].Position;
-    }
-
-    private Vector3 GetCurrentSideInsidePos()
-    {
-        return _diceSides[(int)_currentSide].InsidePosition;
-    }
-
-    private Vector3 GetCurrentSideOutsidePos()
-    {
-        return _diceSides[(int)_currentSide].OutsidePosition;
-    }
-
-    private int GetCurrentSideDotCount()
-    {
-        return _diceSides[(int)_currentSide].DotCount;
+        // GameDelegatesContainer.EventCubeArrivedAtDestination -= OnCubeArrivedAtDestination;
     }
 
     private void OnSideSymbolPlacement(int dotCount)
     {
-        _diceSides[(int)_currentSide].DotCount = dotCount;
+        Vector3 playerPos = GameDelegatesContainer.FuncPlayerPos();
+        Ray ray = new Ray(transform.position, (playerPos - transform.position).normalized);
+        if (Physics.Raycast(
+                ray, out RaycastHit hitInfo, 
+                1000, LayersContainer.SIDES_LAYER_MASK, 
+                QueryTriggerInteraction.Collide)
+            )
+        {
+            if (hitInfo.collider.TryGetComponent(out DiceSide diceSide))
+            {
+                diceSide.DotCount = dotCount;
+            }
+            else
+            {
+                Debug.LogError("No diceSide in raycast");
+            }
+        }
+        else
+        {
+            Debug.LogError("Raycast was empty!");
+        }
+        // _diceSides[(int)_currentSide].DotCount = dotCount;
     }
+
+    private Vector3 GetCurrentSidePos()
+    {
+        Vector3 playerPos = GameDelegatesContainer.FuncPlayerPos();
+        Ray ray = new Ray(transform.position, (playerPos - transform.position).normalized);
+        if (Physics.Raycast(
+                ray, out RaycastHit hitInfo, 
+                1000, LayersContainer.SIDES_LAYER_MASK, 
+                QueryTriggerInteraction.Collide)
+            )
+        {
+            if (hitInfo.collider.TryGetComponent(out DiceSide diceSide))
+            {
+                return diceSide.transform.position;
+            }
+            else
+            {
+                Debug.LogError("No diceSide in raycast");
+                return Vector3.zero;
+            }
+        }
+        else
+        {
+            Debug.LogError("Raycast was empty!");
+            return Vector3.zero;
+        }
+    }
+
+    private int GetCurrentSideDotCount()
+    {
+        Vector3 playerPos = GameDelegatesContainer.FuncPlayerPos();
+        Ray ray = new Ray(transform.position, (playerPos - transform.position).normalized);
+        if (Physics.Raycast(
+                ray, out RaycastHit hitInfo, 
+                1000, LayersContainer.SIDES_LAYER_MASK, 
+                QueryTriggerInteraction.Collide)
+            )
+        {
+            if (hitInfo.collider.TryGetComponent(out DiceSide diceSide))
+            {
+                return diceSide.DotCount;
+            }
+            else
+            {
+                Debug.LogError("No diceSide in raycast");
+                return -1;
+            }
+        }
+        else
+        {
+            Debug.LogError("Raycast was empty!");
+            return -1;
+        }
+    }
+
+    // private void OnCubeArrivedAtDestination()
+    // { 
+    //     Ray ray = new Ray(transform.position, (playerPos - transform.position).normalized);
+    //     if (Physics.Raycast(
+    //             ray, out RaycastHit hitInfo, 
+    //             1000, LayersContainer.SIDES_LAYER_MASK, 
+    //             QueryTriggerInteraction.Collide)
+    //         )
+    //     {
+    //         if (hitInfo.collider.TryGetComponent(out DiceSide diceSide))
+    //         {
+    //             return diceSide.DotCount;
+    //         }
+    //         else
+    //         {
+    //             Debug.LogError("No diceSide in raycast");
+    //             return -1;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError("Raycast was empty!");
+    //         return -1;
+    //     }
+    // }
 }

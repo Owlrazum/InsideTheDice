@@ -19,10 +19,18 @@ public class InputCommandsReceiver : MonoBehaviour
                     return;
                 }
 
+                if (GameDelegatesContainer.FuncPlayerState() != PlayerStateType.Idle)
+                {
+                    return;
+                }
 
                 if (Input.GetKeyDown(KeyCode.Alpha1))
                 {
-                    if (GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols() == 1)
+                    if (GameDelegatesContainer.FuncCurrentSideDotCount() > 0)
+                    {
+                        return;
+                    }
+                    if (GameDelegatesContainer.FuncIsDotCountAlreadyPlaced(1))
                     {
                         return;
                     }
@@ -30,7 +38,11 @@ public class InputCommandsReceiver : MonoBehaviour
                 }
                 else if (Input.GetKeyDown(KeyCode.Alpha2))
                 {
-                    if (GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols() == 2)
+                    if (GameDelegatesContainer.FuncCurrentSideDotCount() > 0)
+                    {
+                        return;
+                    }
+                    if (GameDelegatesContainer.FuncIsDotCountAlreadyPlaced(2))
                     {
                         return;
                     }
@@ -38,7 +50,11 @@ public class InputCommandsReceiver : MonoBehaviour
                 }
                 else if (Input.GetKeyDown(KeyCode.Alpha3))
                 {
-                    if (GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols() == 3)
+                    if (GameDelegatesContainer.FuncCurrentSideDotCount() > 0)
+                    {
+                        return;
+                    }
+                    if (GameDelegatesContainer.FuncIsDotCountAlreadyPlaced(3))
                     {
                         return;
                     }
@@ -46,7 +62,11 @@ public class InputCommandsReceiver : MonoBehaviour
                 }
                 else if (Input.GetKeyDown(KeyCode.Alpha4))
                 {
-                    if (GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols() == 4)
+                    if (GameDelegatesContainer.FuncCurrentSideDotCount() > 0)
+                    {
+                        return;
+                    }
+                    if (GameDelegatesContainer.FuncIsDotCountAlreadyPlaced(4))
                     {
                         return;
                     }
@@ -54,7 +74,11 @@ public class InputCommandsReceiver : MonoBehaviour
                 }
                 else if (Input.GetKeyDown(KeyCode.Alpha5))
                 {
-                    if (GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols() == 5)
+                    if (GameDelegatesContainer.FuncCurrentSideDotCount() > 0)
+                    {
+                        return;
+                    }
+                    if (GameDelegatesContainer.FuncIsDotCountAlreadyPlaced(5))
                     {
                         return;
                     }
@@ -62,7 +86,11 @@ public class InputCommandsReceiver : MonoBehaviour
                 }
                 else if (Input.GetKeyDown(KeyCode.Alpha6))
                 {
-                    if (GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols() == 6)
+                    if (GameDelegatesContainer.FuncCurrentSideDotCount() > 0)
+                    {
+                        return;
+                    }
+                    if (GameDelegatesContainer.FuncIsDotCountAlreadyPlaced(6))
                     {
                         return;
                     }

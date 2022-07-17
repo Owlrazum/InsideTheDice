@@ -9,12 +9,12 @@ public class BackgroundRotator : MonoBehaviour
 
     private void Awake()
     {
-        ApplicationDelegatesContainer.EventBeforeLoadingNextScene += OnBeforeNextSceneLoad;
+        ApplicationDelegatesContainer.EventBeforeLoadingGameScene += OnBeforeNextSceneLoad;
     }
 
     private void OnDestroy()
     {
-        ApplicationDelegatesContainer.EventBeforeLoadingNextScene -= OnBeforeNextSceneLoad;
+        ApplicationDelegatesContainer.EventBeforeLoadingGameScene -= OnBeforeNextSceneLoad;
     }
 
     private void OnBeforeNextSceneLoad()

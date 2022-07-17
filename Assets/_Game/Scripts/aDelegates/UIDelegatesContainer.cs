@@ -14,4 +14,6 @@ public static class UIDelegatesContainer
     // Menu
     public static Action EventExitToMainMenuPressed;
     public static Action EventContinueButtonPressed;
+
+    public static Action ShowEndLevelCanvas;
 }
