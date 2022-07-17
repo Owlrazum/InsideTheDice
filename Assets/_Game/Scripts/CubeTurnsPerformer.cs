@@ -9,10 +9,7 @@ public class CubeTurnsPerformer : MonoBehaviour
     private Transform _levelCubeTransform;
 
     [SerializeField]
-    private float _returnToIdentitySpeedLerp;
-
-    [SerializeField]
-    private float _pauseTimeBeforeReturn = 0.5f;
+    private float _returnToIdentitySpeedLerp = 0.5f;
 
     [SerializeField]
     private float _turnDistance = 12;
@@ -26,7 +23,7 @@ public class CubeTurnsPerformer : MonoBehaviour
     [SerializeField]
     private Vector3 _sequenceCompleteTargetOffset = Vector3.down * 11;
 
-    private LevelDescriptionSO _leveDesc;
+    private LevelDescriptionSO _levelDesc;
 
     private MeshRenderer _renderer;
 
@@ -37,30 +34,42 @@ public class CubeTurnsPerformer : MonoBehaviour
     private void Awake()
     {
         TryGetComponent(out _renderer);
+        ApplicationDelegatesContainer.ShouldStartTransitionToCubeTurns += OnShouldStartTransitionToCubeTurns;
+
+        ApplicationDelegatesContainer.MainMenuLevelStart += OnMainMenuLevelStart;
         ApplicationDelegatesContainer.LevelCubeTurnsStart += OnLevelCubeTurnsStart;
-        ApplicationDelegatesContainer.LevelCubeTurnsEnd += OnLevelCubeTurnsEnd;
+        ApplicationDelegatesContainer.LevelInsideCubeStart += OnLevelInsideCubeStart;
 
         _levelCubePosition = _levelCubeTransform.localPosition;
     }
 
     private void OnDestroy()
     { 
+        ApplicationDelegatesContainer.ShouldStartTransitionToCubeTurns -= OnShouldStartTransitionToCubeTurns;
+
+        ApplicationDelegatesContainer.MainMenuLevelStart -= OnMainMenuLevelStart;
         ApplicationDelegatesContainer.LevelCubeTurnsStart -= OnLevelCubeTurnsStart;
-        ApplicationDelegatesContainer.LevelCubeTurnsEnd -= OnLevelCubeTurnsEnd;
+        ApplicationDelegatesContainer.LevelInsideCubeStart -= OnLevelInsideCubeStart;
     }
 
-    private void OnLevelCubeTurnsStart(LevelDescriptionSO leveDescArg)
+    private void OnShouldStartTransitionToCubeTurns()
     {
-        _renderer.enabled = false;
-        _leveDesc = leveDescArg;
-        Quaternion mainMenuRotation = ApplicationDelegatesContainer.SceneBufferGetCubeRotation();
-        _levelCubeTransform.localRotation = mainMenuRotation;
+        if (GameDelegatesContainer.FuncGameState() == GameStateType.MainMenuTransition)
+        { 
+            _renderer.enabled = false;
+            Quaternion mainMenuRotation = ApplicationDelegatesContainer.SceneBufferGetCubeRotation();
+            _levelCubeTransform.localRotation = mainMenuRotation;
+        }
+    }
+
+    private void OnMainMenuLevelStart(LevelDescriptionSO levelDescArg)
+    {
+        _levelDesc = levelDescArg;
         StartCoroutine(ReturnCubeToIdentityRotation());
     }
 
     private IEnumerator ReturnCubeToIdentityRotation()
     {
-        yield return new WaitForSeconds(_pauseTimeBeforeReturn);
         float lerpParam = 0;
         Quaternion initialRotation = _levelCubeTransform.localRotation;
         while (lerpParam < 1)
@@ -74,8 +83,17 @@ public class CubeTurnsPerformer : MonoBehaviour
         OnReturnCubeToIdentityRotationComplete();
     }
 
+
     private void OnReturnCubeToIdentityRotationComplete()
     {
+        _renderer.enabled = true;
+        _cubeTurnsSequence = CubeTurnsSequence();
+        StartCoroutine(_cubeTurnsSequence);
+    }
+
+    private void OnLevelCubeTurnsStart(LevelDescriptionSO levelDescArg)
+    {
+        _levelDesc = levelDescArg;
         _renderer.enabled = true;
         _cubeTurnsSequence = CubeTurnsSequence();
         StartCoroutine(_cubeTurnsSequence);
@@ -93,7 +111,7 @@ public class CubeTurnsPerformer : MonoBehaviour
             Quaternion targetRot = initialRot;
 
             currentStep++;
-            if (currentStep >= _leveDesc.CubeTurnSequence.Length)
+            if (currentStep >= _levelDesc.CubeTurnSequence.Length)
             {
                 targetPos += _sequenceCompleteTargetOffset;
 
@@ -114,7 +132,7 @@ public class CubeTurnsPerformer : MonoBehaviour
                 currentStep = 0;
             }
 
-            CubeTurnType currentTurn = _leveDesc.CubeTurnSequence[currentStep];
+            CubeTurnType currentTurn = _levelDesc.CubeTurnSequence[currentStep];
             
             switch (currentTurn)
             { 
@@ -149,8 +167,11 @@ public class CubeTurnsPerformer : MonoBehaviour
         }
     }
 
-    private void OnLevelCubeTurnsEnd()
+    private void OnLevelInsideCubeStart()
     {
         StopCoroutine(_cubeTurnsSequence);
+        transform.localPosition = _levelCubePosition;
+        transform.localRotation = Quaternion.identity;
+        _renderer.enabled = false;
     }
 }

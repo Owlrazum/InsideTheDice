@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Assertions;
 
 public enum SideType
 { 
@@ -13,7 +12,7 @@ public enum SideType
 
 public class DiceCube : MonoBehaviour
 {
-    private Transform[] _sides;
+    private DiceSide[] _diceSides;
 
     private const int BOTTOM = 0;
     private const int TOP = 1;
@@ -22,101 +21,73 @@ public class DiceCube : MonoBehaviour
     private const int LEFT = 4;
     private const int RIGHT = 5;
 
+    private SideType _currentSide;
+
     void Awake()
     {
-        _sides = new Transform[6];
+        _diceSides = new DiceSide[6];
         for (int i = 0; i < 6; i++)
         { 
-            _sides[i] = transform.GetChild(i);
+            bool isFound = transform.GetChild(0).GetChild(i).TryGetComponent(out _diceSides[i]);
+#if UNITY_EDITOR
+            if (!isFound)
+            {
+                Debug.LogError("Children should be diceSides!");
+            }
+#endif 
         }
 
-        GameDelegatesContainer.EventSwitchSideStart -= OnSwitchSide;
-        GameDelegatesContainer.FuncSidePos += GetSidePos;
+        _currentSide = SideType.Backward;
+
+        GameDelegatesContainer.EventSwitchSideEnd += OnSwitchSideEnd;
+        
+        GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols += GetCurrentSideDotCount;
+        InputDelegatesContainer.SideSymbolPlacement += OnSideSymbolPlacement;
+        GameDelegatesContainer.FuncCurrentSidePos += GetCurrentSidePos;
+        GameDelegatesContainer.FuncCurrentSideInsidePos += GetCurrentSideInsidePos;
+        GameDelegatesContainer.FuncCurrentSideOutsidePos += GetCurrentSideOutsidePos;
+
     }
 
     private void OnDestroy()
     { 
-        GameDelegatesContainer.EventSwitchSideStart -= OnSwitchSide;
-        GameDelegatesContainer.FuncSidePos -= GetSidePos;
+        GameDelegatesContainer.EventSwitchSideEnd -= OnSwitchSideEnd;
+
+        GameDelegatesContainer.FuncDoesCurrentSideHasAnySymbols -= GetCurrentSideDotCount;
+        InputDelegatesContainer.SideSymbolPlacement -= OnSideSymbolPlacement;
+        GameDelegatesContainer.FuncCurrentSidePos -= GetCurrentSidePos;
+        GameDelegatesContainer.FuncCurrentSideInsidePos -= GetCurrentSideInsidePos;
+        GameDelegatesContainer.FuncCurrentSideOutsidePos -= GetCurrentSideOutsidePos;
+
     }
 
-    private void OnSwitchSide(int sideIndex)
+    private void OnSwitchSideEnd(SideType newSide)
     {
-        Assert.AreNotEqual(sideIndex, 2);
-        switch (sideIndex)
-        { 
-            case 0:
-                OnBottomSideSwitch();
-                break;
-            case 1:
-                OnTopSideSwitch();
-                break;
-            case 3:
-                OnForwardSideSwitch();
-                break;
-            case 4:
-                OnLeftSideSwitch();
-                break;
-            case 5:
-                OnRightSideSwitch();
-                break;
-        }
+        _currentSide = newSide;
     }
 
-    private Vector3 GetSidePos(SideType side)
+    private Vector3 GetCurrentSidePos()
     {
-        return _sides[SideToIndex(side)].position;
+        return _diceSides[(int)_currentSide].Position;
     }
 
-    private void OnBottomSideSwitch()
+    private Vector3 GetCurrentSideInsidePos()
     {
-        Transform t      = _sides[BOTTOM];
-        _sides[BOTTOM]   = _sides[FORWARD];
-        _sides[FORWARD]  = _sides[TOP];
-        _sides[TOP]      = _sides[BACKWARD];
-        _sides[BACKWARD] = t;
+        return _diceSides[(int)_currentSide].InsidePosition;
     }
 
-    private void OnTopSideSwitch()
+    private Vector3 GetCurrentSideOutsidePos()
     {
-        Transform t      = _sides[TOP];
-        _sides[TOP]      = _sides[FORWARD];
-        _sides[FORWARD]  = _sides[BOTTOM];
-        _sides[BOTTOM]   = _sides[BACKWARD];
-        _sides[BACKWARD] = t;
+        return _diceSides[(int)_currentSide].OutsidePosition;
     }
 
-    private void OnForwardSideSwitch()
+    private int GetCurrentSideDotCount()
     {
-        Transform t      = _sides[FORWARD];
-        _sides[FORWARD]  = _sides[BACKWARD];
-        _sides[BACKWARD] = t;
-
-        t                = _sides[BOTTOM];
-        _sides[BOTTOM]   = _sides[TOP];
-        _sides[TOP]      = t;
+        return _diceSides[(int)_currentSide].DotCount;
     }
 
-    private void OnLeftSideSwitch()
+    private void OnSideSymbolPlacement(int dotCount)
     {
-        Transform t      = _sides[LEFT];
-        _sides[LEFT]     = _sides[FORWARD];
-        _sides[FORWARD]  = _sides[RIGHT];
-        _sides[RIGHT]    = _sides[BACKWARD];
-        _sides[BACKWARD] = t;
-    }
-
-    private void OnRightSideSwitch()
-    {
-        Transform t      = _sides[RIGHT];
-        _sides[RIGHT]     = _sides[FORWARD];
-        _sides[FORWARD]  = _sides[LEFT];
-        _sides[LEFT]    = _sides[BACKWARD];
-        _sides[BACKWARD] = t;
-    }
-
-    private int SideToIndex(SideType side)
-    {
-        return (int)side;
+        _diceSides[(int)_currentSide].DotCount = dotCount;
     }
 }

@@ -3,11 +3,19 @@ using UnityEngine;
 
 public static class GameDelegatesContainer
 {
-    public static Action TransitionToInsideCubeEnd;
+    public static Func<GameStateType> FuncGameState;
 
-    public static Func<SideType, Vector3> FuncSidePos;
+    public static Action EventTransitionToInsideCubeEnd;
+    public static Action EventTransitionToCubeTurnsEnd;
 
-    public static Action<int> EventSwitchSideStart;
+    public static Func<Vector3> FuncCurrentSidePos;
+    public static Func<Vector3> FuncCurrentSideInsidePos;
+    public static Func<Vector3> FuncCurrentSideOutsidePos;
+    
+    public static Func<int> FuncDoesCurrentSideHasAnySymbols;
+
+    public static Action<SwitchType> EventSwitchSideStart;
     public static Action<float> EventSwitchSideLerpParam;
-    public static Action EventSwitchSideEnd;
+    public static Action<SideType> EventSwitchSideEnd;
+
 }

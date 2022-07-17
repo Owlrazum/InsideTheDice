@@ -19,7 +19,8 @@ public class CameraController : MonoBehaviour
         TryGetComponent(out _renderingCamera);
         TryGetComponent(out _brain);
 
-        ApplicationDelegatesContainer.LevelCubeTurnsStart += OnLevelCubeTurnsStart;
+        ApplicationDelegatesContainer.ShouldStartTransitionToCubeTurns += StartTransitionToCubeTurns;
+        ApplicationDelegatesContainer.ShouldStartTransitionToInsideCube += StartTransitionToInsideCube;
 
         _cubeTurnsCamera.Priority = 0;
         _insideCubeCamera.Priority = 1;
@@ -27,24 +28,41 @@ public class CameraController : MonoBehaviour
 
     private void OnDestroy()
     {
-        ApplicationDelegatesContainer.LevelCubeTurnsStart -= OnLevelCubeTurnsStart;
+        ApplicationDelegatesContainer.ShouldStartTransitionToCubeTurns -= StartTransitionToCubeTurns;
+        ApplicationDelegatesContainer.ShouldStartTransitionToInsideCube -= StartTransitionToInsideCube;
     }
 
-    private void OnLevelCubeTurnsStart(LevelDescriptionSO desc)
+    private void StartTransitionToCubeTurns()
     {
-        StartCoroutine(OnNextFrameStartBlend());
+        _insideCubeCamera.Priority = 0;
+        _cubeTurnsCamera.Priority = 1;
+        StartCoroutine(NotifyTransitionToCubeTurnsEnd());
+        // StartCoroutine(OnNextFrameStartBlend());
+    }
+
+    private IEnumerator NotifyTransitionToCubeTurnsEnd()
+    {
+        print(_brain.m_DefaultBlend.BlendTime);
+        yield return new WaitForSeconds(_brain.m_DefaultBlend.BlendTime);
+        GameDelegatesContainer.EventTransitionToCubeTurnsEnd();
     }
 
     private IEnumerator OnNextFrameStartBlend()
     {
         yield return null;
-        _insideCubeCamera.Priority = 0;
-        _cubeTurnsCamera.Priority = 1;
     }
 
-    private void Update()
-    { 
-        print(_brain.IsBlending);
+    private void StartTransitionToInsideCube()
+    {
+        _cubeTurnsCamera.Priority = 0;
+        _insideCubeCamera.Priority = 1;
+        StartCoroutine(NotifyTransitionToInsideCubeEnd());
+    }
+
+    private IEnumerator NotifyTransitionToInsideCubeEnd()
+    {
+        yield return new WaitForSeconds(_brain.m_DefaultBlend.BlendTime);
+        GameDelegatesContainer.EventTransitionToInsideCubeEnd();
     }
 
     private Ray GetCameraScreenPointToRay(Vector3 screenPos)
