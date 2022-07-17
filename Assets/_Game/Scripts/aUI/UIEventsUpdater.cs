@@ -18,12 +18,8 @@ namespace Orazum.UI
         private int _finishedMovingUICount = 0;
         private bool _isBeganTouchValid;
 
-#if UNITY_EDITOR
         private Vector2 _pressMousePos;
         private Vector2 _currentMousePos;
-#elif UNITY_ANDROID
-        private Touch _currentTouch;
-#endif
 
         private void Awake()
         {
@@ -106,16 +102,6 @@ namespace Orazum.UI
 
         private void UpdatePointerHandlers()
         {
-#if UNITY_EDITOR
-#elif UNITY_ANDROID
-            if (Input.touchCount == 0)
-            {
-                NotyfyManyPointerExitWithNoTouchPos();
-                return;
-            }
-#endif
-
-#if UNITY_EDITOR
             _currentMousePos = Input.mousePosition;
             if (Input.GetMouseButtonDown(0))
             {
@@ -123,37 +109,16 @@ namespace Orazum.UI
                 _pressMousePos = Input.mousePosition;
                 return;
             }
-#elif UNITY_ANDROID
-            _currentTouch = Input.GetTouch(0);
-    
-            if (_currentTouch.phase == TouchPhase.Began)
-            {
-                _isBeganTouchValid = true;
-                return;
-            }
-#endif
             if (_isBeganTouchValid)
             {
-#if UNITY_EDITOR
                 if ((_currentMousePos - _pressMousePos).sqrMagnitude > SQR_MAGNITUDE_POINTER_TOUCH_TOLERANCE)
                 {
                     _isBeganTouchValid = false;
                 }
-#elif UNITY_ANDROID
-                if (_currentTouch.deltaPosition.sqrMagnitude > SQR_MAGNITUDE_POINTER_TOUCH_TOLERANCE)
-                {
-                    _isBeganTouchValid = false;
-                }
-#endif
             }
 
-#if UNITY_EDITOR
             if (Input.GetMouseButtonUp(0))
             {
-#elif UNITY_ANDROID
-            if (_currentTouch.phase == TouchPhase.Ended || _currentTouch.phase == TouchPhase.Canceled)
-            {
-#endif
                 if (_isBeganTouchValid)
                 {
                     NotifyOnePointerTouchIfNeeded();
@@ -176,11 +141,7 @@ namespace Orazum.UI
             foreach (var pair in _touchHandlers)
             {
                 var handler = pair.Value;
-#if UNITY_EDITOR
                 if (RectTransformUtility.RectangleContainsScreenPoint(handler.Rect, _currentMousePos))
-#elif UNITY_ANDROID
-                if (RectTransformUtility.RectangleContainsScreenPoint(handler.Rect, _currentTouch.position))
-#endif
                 { 
                     handler.OnPointerTouch();
                     return;
@@ -193,13 +154,8 @@ namespace Orazum.UI
             foreach (var pair in _enterExitHandlers)
             {
                 var handler = pair.Value;
-#if UNITY_EDITOR
                 if (!RectTransformUtility.RectangleContainsScreenPoint(handler.InteractionRect, 
                     _currentMousePos, null, Vector4.one * _offset))
-#elif UNITY_ANDROID
-                if (!RectTransformUtility.RectangleContainsScreenPoint(handler.InteractionRect, 
-                    _currentTouch.position, null, Vector4.one * _offset))
-#endif
                 {
                     if (handler.EnterState)
                     {
@@ -228,13 +184,8 @@ namespace Orazum.UI
             foreach (var pair in _enterExitHandlers)
             {
                 var handler = pair.Value;
-#if UNITY_EDITOR
                 if (RectTransformUtility.RectangleContainsScreenPoint(handler.InteractionRect, 
                     _currentMousePos, null, Vector4.one * _offset))
-#elif UNITY_ANDROID
-                if (RectTransformUtility.RectangleContainsScreenPoint(handler.InteractionRect,
-                     _currentTouch.position, null, Vector4.one * _offset))
-#endif
                 {
                     if (!handler.EnterState)
                     {
@@ -252,15 +203,9 @@ namespace Orazum.UI
                 var handler = pair.Value;
                 if (handler.ShouldUpdateLocalPoint)
                 {
-#if UNITY_EDITOR
                     RectTransformUtility.ScreenPointToLocalPointInRectangle(handler.Rect,
                         _currentMousePos, null, out Vector2 localPoint
                     );
-#elif UNITY_ANDROID
-                    RectTransformUtility.ScreenPointToLocalPointInRectangle(handler.Rect,
-                        _currentTouch.position, null, out Vector2 localPoint
-                    );
-#endif
                     handler.UpdateLocalPoint(new Vector2Int((int)localPoint.x, (int)localPoint.y));
                 }
             }

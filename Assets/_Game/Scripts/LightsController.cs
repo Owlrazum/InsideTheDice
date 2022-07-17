@@ -3,7 +3,14 @@ using UnityEngine;
 public class LightsController : MonoBehaviour
 {
     [SerializeField]
-    private float _speedDeg;
+    private float _speedDegPrimary;
+
+    [SerializeField]
+    private float _speedDegSecondary;
+
+    [SerializeField]
+    private float _secondaryOffset;
+
 
     private Transform _primary;
     private Transform _secondary;
@@ -12,12 +19,15 @@ public class LightsController : MonoBehaviour
     {
         _primary = transform.GetChild(0);
         _secondary = transform.GetChild(1);
+
+        _secondary.RotateAround(Vector3.zero, Vector3.right, _secondaryOffset);
     }
 
     private void Update()
     {
-        float angleDelta = _speedDeg * Time.deltaTime;
+        float angleDelta = _speedDegPrimary * Time.deltaTime;
         _primary.RotateAround(Vector3.zero, Vector3.up, angleDelta);
-        _secondary.RotateAround(Vector3.zero, Vector3.up, angleDelta);
+        angleDelta = _speedDegSecondary * Time.deltaTime;
+        _secondary.RotateAround(Vector3.zero, Vector3.right, angleDelta);
     }
 }

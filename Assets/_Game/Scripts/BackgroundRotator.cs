@@ -6,6 +6,22 @@ public class BackgroundRotator : MonoBehaviour
     private float _amplitude;
 
     private Vector3 _rotationEuler;
+
+    private void Awake()
+    {
+        ApplicationDelegatesContainer.EventBeforeLoadingNextScene += OnBeforeNextSceneLoad;
+    }
+
+    private void OnDestroy()
+    {
+        ApplicationDelegatesContainer.EventBeforeLoadingNextScene -= OnBeforeNextSceneLoad;
+    }
+
+    private void OnBeforeNextSceneLoad()
+    {
+        ApplicationDelegatesContainer.SceneBufferSetCubeRotation(transform.rotation);
+    }
+
     private void Update()
     {
         _rotationEuler.x = _amplitude * 2* Time.deltaTime;

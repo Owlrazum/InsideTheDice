@@ -16,6 +16,8 @@ public class UIButton : MonoBehaviour, IPointerTouchHandler, IPointerEnterExitHa
     private Image _image;
 
     public Action EventOnTouch { get; set; }
+    public Action EventOnEnter { get; set; }
+    public Action EventOnExit { get; set; }
 
     private RectTransform _rect;
     public RectTransform Rect { get { return _rect; } }
@@ -62,10 +64,12 @@ public class UIButton : MonoBehaviour, IPointerTouchHandler, IPointerEnterExitHa
     public virtual void OnPointerEnter()
     {
         _image.color = _highlightColor;
+        EventOnEnter?.Invoke();
     }
 
     public virtual void OnPointerExit()
     {
         _image.color = _defaultColor;
+        EventOnExit?.Invoke();
     }
 }

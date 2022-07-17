@@ -22,7 +22,7 @@ public class MainMenuCanvas : MonoBehaviour
 
     private void OnStartGameButtonPressed()
     {
-        // EventsContainer.EventGameStart?.Invoke();
+        UIDelegatesContainer.StartGameButtonPressed?.Invoke();
     }
 
     private void OnExitGameButtonPressed()

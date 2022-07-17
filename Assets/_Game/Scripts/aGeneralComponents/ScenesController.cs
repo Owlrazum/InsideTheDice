@@ -19,6 +19,7 @@ public class ScenesController : MonoBehaviour
 
         ApplicationDelegatesContainer.ShouldLoadNextScene += LoadNextScene;
         ApplicationDelegatesContainer.ShouldStartLoadingNextScene += StartLoadingNextScene;
+        ApplicationDelegatesContainer.ShouldFinishLoadingNextScene += FinishLoadingScene;
 
         UIDelegatesContainer.EventExitToMainMenuPressed += LoadMainMenuScene;
         UIDelegatesContainer.EventContinueButtonPressed += FinishLoadingScene;
@@ -30,6 +31,7 @@ public class ScenesController : MonoBehaviour
     { 
         ApplicationDelegatesContainer.ShouldLoadNextScene -= LoadNextScene;
         ApplicationDelegatesContainer.ShouldStartLoadingNextScene -= StartLoadingNextScene;
+        ApplicationDelegatesContainer.ShouldFinishLoadingNextScene -= FinishLoadingScene;
 
         UIDelegatesContainer.EventExitToMainMenuPressed -= LoadMainMenuScene;
         UIDelegatesContainer.EventContinueButtonPressed -= FinishLoadingScene;
@@ -46,6 +48,7 @@ public class ScenesController : MonoBehaviour
     private void StartLoadingNextScene()
     { 
         _loadingScene = SceneManager.LoadSceneAsync(++_currentSceneIndex);
+        _loadingScene.allowSceneActivation = false;
         ApplicationDelegatesContainer.EventStartedLoadingNextScene?.Invoke();
     }
 

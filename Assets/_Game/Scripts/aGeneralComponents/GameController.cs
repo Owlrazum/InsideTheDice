@@ -11,19 +11,39 @@ public class GameController : MonoBehaviour
     private void Awake()
     {
         UIDelegatesContainer.StartGameButtonPressed += OnGameStartButtonPressed;
+        GameDelegatesContainer.TransitionToInsideCubeEnd += OnPlayerCubeTurnsReady;
 
         DontDestroyOnLoad(gameObject);
     }
 
     private void OnDestroy()
-    { 
+    {
         UIDelegatesContainer.StartGameButtonPressed -= OnGameStartButtonPressed;
+        GameDelegatesContainer.TransitionToInsideCubeEnd -= OnPlayerCubeTurnsReady;;
+    }
+
+    private void Start()
+    {
+        ApplicationDelegatesContainer.ShouldStartLoadingNextScene();
     }
 
     private void OnGameStartButtonPressed()
     {
-        ApplicationDelegatesContainer.ShouldLoadNextScene?.Invoke();
-        ApplicationDelegatesContainer.ShouldPrepareLevel?.Invoke(_gameDescription.GameSequence[_currentLevel]);
+        ApplicationDelegatesContainer.EventBeforeLoadingNextScene();
+        ApplicationDelegatesContainer.ShouldFinishLoadingNextScene();
+        
+        StartCoroutine(OnNextFrameStartLevel());
+    }
+
+    private IEnumerator OnNextFrameStartLevel()
+    { 
+        yield return null;
+        print("Start");
+        ApplicationDelegatesContainer.LevelCubeTurnsStart(_gameDescription.Levels[_currentLevel]);
         _currentLevel++;
+    }
+
+    private void OnPlayerCubeTurnsReady()
+    { 
     }
 }

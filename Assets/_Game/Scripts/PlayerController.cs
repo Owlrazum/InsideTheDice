@@ -75,7 +75,6 @@ public class PlayerController : MonoBehaviour
 
     private void StartSwitchingSide(int switchType)
     {
-        // Quaternion targetRot = PlayerLookUpTables.Rotations[_index.side, _index.up];
         switch (switchType)
         { 
             case 0:
@@ -93,15 +92,12 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
-        print(_currentTargetUp);
-        print(_middleTargetUp);
-
         StartCoroutine(SwitchSequence(switchType));
     }
 
     private IEnumerator SwitchSequence(int switchType)
     {
-        GameDelegatesContainer.EventSwitchSideStart.Invoke(SwitchTypeToSideIndex(switchType));
+        GameDelegatesContainer.EventSwitchSideStart?.Invoke(SwitchTypeToSideIndex(switchType));
         _state = StateType.SwitchingSide;
 
         float lerpParam = 0;
@@ -143,7 +139,6 @@ public class PlayerController : MonoBehaviour
                 toRotate = -transform.up * 90;
                 break;
         }
-        print(toRotate);
         _beizerParent.Rotate(toRotate, Space.World);
 
         GameDelegatesContainer.EventSwitchSideEnd?.Invoke();
