@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -27,8 +28,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     [Tooltip("size should be equal to sideCount * (sideCount - 1)")]
     private BeizerSegment[] _switchBeizerSegments;
-    
-    private (int side, int up) _index;
+
+    [SerializeField]
+    private Transform _beizerParent;
+
+    private Vector3Int _currentTargetUp;
+    private Vector3Int _middleTargetUp;
 
     private void Awake()
     {
@@ -38,8 +43,7 @@ public class PlayerController : MonoBehaviour
             bs.Initialize();
         }
 
-        _index.side = 0;
-        _index.up = 0;
+        _currentTargetUp = ToVector3Int(transform.up);
     }
 
     private void OnDestroy()
@@ -69,39 +73,76 @@ public class PlayerController : MonoBehaviour
 
     private void StartSwitchingSide(int switchType)
     {
-        int beizerSegmentIndexToUse = (int)_index.side * 6 + switchType;
-        ChangeIndex(switchType);
-        
-        Quaternion targetRot = transform.rotation;
-        Vector3 fromDirection = -transform.position;
-        Vector3 toDirection = -_switchBeizerSegments[beizerSegmentIndexToUse].Target;
-        Quaternion delta = Quaternion.FromToRotation(fromDirection, toDirection);
-        targetRot *= delta;
+        // Quaternion targetRot = PlayerLookUpTables.Rotations[_index.side, _index.up];
+        switch (switchType)
+        { 
+            case 0:
+                _currentTargetUp = ToVector3Int(Quaternion.Euler(-transform.right * 90) * _currentTargetUp);
+                _middleTargetUp  = _currentTargetUp;
+                break;
+            case 1:
+                _currentTargetUp = ToVector3Int(Quaternion.Euler(transform.right * 90) * _currentTargetUp);
+                _middleTargetUp  = _currentTargetUp;
+                break;
+            case 2:
+                _currentTargetUp = ToVector3Int(Quaternion.Euler(transform.right * 90) * _currentTargetUp);
+                _middleTargetUp  = _currentTargetUp;
+                _currentTargetUp = ToVector3Int(Quaternion.Euler(transform.right * 90) * _currentTargetUp);
+                break;
+        }
 
-        StartCoroutine(SwitchSequence(switchType, beizerSegmentIndexToUse, targetRot));
+        print(_currentTargetUp);
+        print(_middleTargetUp);
+
+        StartCoroutine(SwitchSequence(switchType));
     }
 
-    private IEnumerator SwitchSequence(int switchType, int beizerSegmentIndex, Quaternion targetRot)
+    private IEnumerator SwitchSequence(int switchType)
     {
         GameDelegatesContainer.EventSwitchSideStart.Invoke(SwitchTypeToSideIndex(switchType));
         _state = StateType.SwitchingSide;
 
         float lerpParam = 0;
-        Vector3 initialPos = transform.position;
-        Quaternion initialRot = transform.rotation;
         while (lerpParam < 1)
         {
             lerpParam += _switchSpeedLerp * Time.deltaTime;
-            if (lerpParam > 1)
-            {
-                lerpParam = 1;
-            }
 
-            transform.position = _switchBeizerSegments[beizerSegmentIndex].GetLerpedPos(lerpParam);
-            transform.rotation = Quaternion.Slerp(initialRot, targetRot, lerpParam);
+            transform.position = _switchBeizerSegments[switchType].GetLerpedPos(lerpParam);
+            if (lerpParam < 0.5f && switchType == 2)
+            {
+                transform.localRotation = Quaternion.LookRotation(new Vector3(0, 5, 0) - transform.position, _middleTargetUp);
+                transform.localEulerAngles = CustomMath.Round(transform.localEulerAngles);
+            }
+            else
+            { 
+                transform.localRotation = Quaternion.LookRotation(new Vector3(0, 5, 0) - transform.position, _currentTargetUp);
+                transform.localEulerAngles = CustomMath.Round(transform.localEulerAngles);
+            }
             GameDelegatesContainer.EventSwitchSideLerpParam?.Invoke(lerpParam);
             yield return null;
         }
+
+        Vector3 toRotate = Vector3.zero;
+        switch (switchType)
+        { 
+            case 0:
+                toRotate = -transform.right * 90;
+                break;
+            case 1:
+                toRotate = transform.right * 90;
+                break;
+            case 2:
+                toRotate = transform.up * 180 + transform.forward * 180;
+                break;
+            case 3:
+                toRotate = transform.up * 90;
+                break;
+            case 4:
+                toRotate = -transform.up * 90;
+                break;
+        }
+        print(toRotate);
+        _beizerParent.Rotate(toRotate, Space.World);
 
         GameDelegatesContainer.EventSwitchSideEnd?.Invoke();
         _state = StateType.Idle;
@@ -116,10 +157,8 @@ public class PlayerController : MonoBehaviour
         return index;
     }
 
-    private void ChangeIndex(int switchType)
+    private Vector3Int ToVector3Int(Vector3 v)
     {
-        int prevUp = _index.up;
-        _index.up = PlayerLookUpTables.UpChange[_index.side, prevUp, switchType];
-        _index.side = PlayerLookUpTables.SideConnections[_index.side, prevUp, switchType];
+        return new Vector3Int(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y), Mathf.RoundToInt(v.z));
     }
 }

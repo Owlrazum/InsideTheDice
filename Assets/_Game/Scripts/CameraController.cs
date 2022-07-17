@@ -11,16 +11,12 @@ public class CameraController : MonoBehaviour
 
         GameDelegatesContainer.EventSwitchSideStart += OnSwitchSideStart;
         GameDelegatesContainer.EventSwitchSideLerpParam += OnSwitchSideLerpParam;
-
-        GeneralQueriesContainer.CameraScreenPointToRay += GetCameraScreenPointToRay;
     }
 
     private void OnDestroy()
     {
         GameDelegatesContainer.EventSwitchSideStart -= OnSwitchSideStart;
         GameDelegatesContainer.EventSwitchSideLerpParam -= OnSwitchSideLerpParam;
-
-        GeneralQueriesContainer.CameraScreenPointToRay -= GetCameraScreenPointToRay;
     }
 
     private void OnSwitchSideStart(int side)

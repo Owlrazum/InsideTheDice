@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,10 +27,4 @@ public class ParticlesController : MonoBehaviour
         p.Play();
         particles.Enqueue(p);
     }
-
-    // A pattern from chainsaw:
-    // Change particle type,
-    // StartPlaying,
-    // Update Position,
-    // Stop Playing.
 }

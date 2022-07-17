@@ -24,9 +24,16 @@ public class UIProgressBar : UIBaseFadingCanvas
         base.Awake();
         progressBarTransform = imageToScale.rectTransform;
         
-        GeneralEventsContainer.ProgressWasMade += OnProgressWasMade;
+        // GeneralEventsContainer.ProgressWasMade += OnProgressWasMade;
 
         CompletedHideItself += Reset;
+    }
+
+    private void OnDestroy()
+    {
+        // GeneralEventsContainer.ProgressWasMade -= OnProgressWasMade;
+        
+        CompletedHideItself -= Reset;
     }
 
     public void Initialize(int sliceCountInLevelArg)
