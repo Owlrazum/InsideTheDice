@@ -1142,7 +1142,6 @@ GameObject:
   - component: {fileID: 1961987796}
   - component: {fileID: 1961987797}
   - component: {fileID: 1961987798}
-  - component: {fileID: 1961987801}
   - component: {fileID: 1961987802}
   - component: {fileID: 1961987803}
   m_Layer: 0
@@ -1206,18 +1205,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _sceneIndexToTest: 0
---- !u!114 &1961987801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1961987794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2b3fc94ce1554b51b82263617bc4861, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1961987802
 MonoBehaviour:
   m_ObjectHideFlags: 0

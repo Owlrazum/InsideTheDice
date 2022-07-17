@@ -180,8 +180,8 @@ public class CubeTurnsPerformer : MonoBehaviour
     }
 
     private void OnLevelFinish()
-    { 
-
+    {
+        StartCoroutine(FinishingSequence());
     }
 
     private IEnumerator FinishingSequence()
@@ -199,6 +199,7 @@ public class CubeTurnsPerformer : MonoBehaviour
             if (currentStep >= _levelDesc.CubeTurnSequence.Length)
             {
                 GameDelegatesContainer.EventCubeArrivedAtDestination();
+                yield break;
             }
 
             CubeTurnType currentTurn = _levelDesc.CubeTurnSequence[currentStep];

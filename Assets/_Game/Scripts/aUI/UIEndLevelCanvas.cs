@@ -9,6 +9,7 @@ public class UIEndLevelCanvas : UIBaseFadingCanvas
     {
         base.Awake();
 
+        _canvasGroup.alpha = 0;
         _returnToMainMenuButton.EventOnTouch += OnReturnMainMenuPressed;
 
         UIDelegatesContainer.ShowEndLevelCanvas += ShowItself;

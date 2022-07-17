@@ -132,12 +132,20 @@ public class GameController : MonoBehaviour
     {
         _gameState = GameStateType.Finished;
         UIDelegatesContainer.ShowEndLevelCanvas();
-        ApplicationDelegatesContainer.ShouldStartLoadingNextScene(0);
+        ApplicationDelegatesContainer.ShouldStartLoadingNextScene(2);
     }
 
     private void OnReturnMainMenuPressed()
     {
         _gameState = GameStateType.MainMenu;
         ApplicationDelegatesContainer.ShouldFinishLoadingNextScene();
+    }
+
+    private IEnumerator OnNextFrameStartLoadingOnceMore()
+    { 
+        yield return null;
+        yield return null;
+
+        ApplicationDelegatesContainer.ShouldStartLoadingNextScene(1);
     }
 }
