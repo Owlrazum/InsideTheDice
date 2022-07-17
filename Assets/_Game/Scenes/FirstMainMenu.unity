@@ -1315,7 +1315,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _firstPlaythrough: 00000000010000000300000002000000
   _minimumTurnCount: 3
-  _maximumTurnCount: 9
+  _maximumTurnCount: 7
 --- !u!114 &1961987797
 MonoBehaviour:
   m_ObjectHideFlags: 0
