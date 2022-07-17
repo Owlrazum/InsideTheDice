@@ -1178,7 +1178,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1d14594904e747a6878360587cd7389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameDescription: {fileID: 11400000, guid: c0df8720b12984a7c8f8f3f5270ee81b, type: 2}
+  _firstPlaythrough: 00000000010000000300000002000000
+  _minimumTurnCount: 3
+  _maximumTurnCount: 9
 --- !u!114 &1961987797
 MonoBehaviour:
   m_ObjectHideFlags: 0
