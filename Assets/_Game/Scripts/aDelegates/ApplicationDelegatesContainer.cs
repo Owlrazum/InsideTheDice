@@ -14,13 +14,13 @@ public static class ApplicationDelegatesContainer
     public static Func<Quaternion> SceneBufferGetCubeRotation;
     public static Action<Quaternion> SceneBufferSetCubeRotation;
 
-    public static Action<LevelDescriptionSO> MainMenuLevelStart;
+    public static Action<CubeTurnType[]> MainMenuLevelStart;
 
     // TODO move it to game delegates
     public static Action ShouldStartTransitionToCubeTurns;
     public static Action ShouldStartTransitionToInsideCube;
 
-    public static Action<LevelDescriptionSO> LevelCubeTurnsStart;
+    public static Action<CubeTurnType[]> LevelCubeTurnsStart;
     public static Action LevelInsideCubeStart;
     public static Action LevelCubeTurnsEnd;
 

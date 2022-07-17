@@ -15,15 +15,31 @@ public enum GameStateType
 public class GameController : MonoBehaviour
 {
     [SerializeField]
-    private GameDesciptionSO _gameDescription;
+    private CubeTurnType[] _firstPlaythrough;
 
-    
+    [SerializeField]
+    private int _minimumTurnCount;
+
+    [SerializeField]
+    private int _maximumTurnCount;
+
     private GameStateType _gameState;
 
     private int _currentLevel = 0;
 
+    private const string HAS_COMPLETED_AT_LEAST_ONCE_pref = "hasCompletedAtLeastOnce";
+    private bool _hasCompletedAtLeastOnce;
+
+    private CubeTurnType[] _generatedSequence;
+
     private void Awake()
     {
+        _hasCompletedAtLeastOnce = PlayerPrefs.GetInt(HAS_COMPLETED_AT_LEAST_ONCE_pref, 0) == 1;
+        if (_hasCompletedAtLeastOnce)
+        {
+            GenerateSequence();
+        }
+
         GameDelegatesContainer.FuncGameState += GetGameState;
 
         UIDelegatesContainer.StartGameButtonPressed += OnGameStartButtonPressed;
@@ -100,15 +116,17 @@ public class GameController : MonoBehaviour
     private void OnTransitionToCubeTurnsEnd()
     {
         print(_gameState);
+        CubeTurnType[] sequenceToUse = _hasCompletedAtLeastOnce ? _generatedSequence : _firstPlaythrough;
         if (_gameState == GameStateType.MainMenuTransition)
         { 
             _gameState = GameStateType.CubeTurns;
-            ApplicationDelegatesContainer.MainMenuLevelStart(_gameDescription.Levels[_currentLevel]);
+
+            ApplicationDelegatesContainer.MainMenuLevelStart(sequenceToUse);
         }
         else if (_gameState == GameStateType.Transition)
         { 
             _gameState = GameStateType.CubeTurns;
-            ApplicationDelegatesContainer.LevelCubeTurnsStart(_gameDescription.Levels[_currentLevel]);
+            ApplicationDelegatesContainer.LevelCubeTurnsStart(sequenceToUse);
         }
         else if (_gameState == GameStateType.FinishingLevel)
         {
@@ -133,6 +151,8 @@ public class GameController : MonoBehaviour
         _gameState = GameStateType.Finished;
         UIDelegatesContainer.ShowEndLevelCanvas();
         ApplicationDelegatesContainer.ShouldStartLoadingNextScene(2);
+        PlayerPrefs.SetInt(HAS_COMPLETED_AT_LEAST_ONCE_pref, 1);
+        
     }
 
     private void OnReturnMainMenuPressed()
@@ -147,6 +167,18 @@ public class GameController : MonoBehaviour
         yield return null;
         yield return null;
 
+        GenerateSequence();
         ApplicationDelegatesContainer.ShouldStartLoadingNextScene(1);
+    }
+
+    private void GenerateSequence()
+    {
+        int turnsCount = Random.Range(_minimumTurnCount, _maximumTurnCount + 1);
+        _generatedSequence = new CubeTurnType[turnsCount];
+        for (int i = 0; i < turnsCount; i++)
+        {
+            int turn = Random.Range(0, 4);
+            _generatedSequence[i] = (CubeTurnType)turn;
+        }
     }
 }

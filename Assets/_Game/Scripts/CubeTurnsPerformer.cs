@@ -23,7 +23,7 @@ public class CubeTurnsPerformer : MonoBehaviour
     [SerializeField]
     private Vector3 _sequenceCompleteTargetOffset = Vector3.down * 11;
 
-    private LevelDescriptionSO _levelDesc;
+    private CubeTurnType[] _cubeTurnSequence;
 
     private MeshRenderer _renderer;
 
@@ -66,9 +66,9 @@ public class CubeTurnsPerformer : MonoBehaviour
         }
     }
 
-    private void OnMainMenuLevelStart(LevelDescriptionSO levelDescArg)
+    private void OnMainMenuLevelStart(CubeTurnType[] cubeTurnSequenceArg)
     {
-        _levelDesc = levelDescArg;
+        _cubeTurnSequence = cubeTurnSequenceArg;
         StartCoroutine(ReturnCubeToIdentityRotation());
     }
 
@@ -95,9 +95,9 @@ public class CubeTurnsPerformer : MonoBehaviour
         StartCoroutine(_cubeTurnsSequence);
     }
 
-    private void OnLevelCubeTurnsStart(LevelDescriptionSO levelDescArg)
+    private void OnLevelCubeTurnsStart(CubeTurnType[] cubeTurnSequenceArg)
     {
-        _levelDesc = levelDescArg;
+        _cubeTurnSequence = cubeTurnSequenceArg;
         _renderer.enabled = true;
         _cubeTurnsSequence = CubeTurnsSequence();
         StartCoroutine(_cubeTurnsSequence);
@@ -115,7 +115,7 @@ public class CubeTurnsPerformer : MonoBehaviour
             Quaternion targetRot = initialRot;
 
             currentStep++;
-            if (currentStep >= _levelDesc.CubeTurnSequence.Length)
+            if (currentStep >= _cubeTurnSequence.Length)
             {
                 targetPos += _sequenceCompleteTargetOffset;
 
@@ -136,7 +136,7 @@ public class CubeTurnsPerformer : MonoBehaviour
                 currentStep = 0;
             }
 
-            CubeTurnType currentTurn = _levelDesc.CubeTurnSequence[currentStep];
+            CubeTurnType currentTurn = _cubeTurnSequence[currentStep];
             
             switch (currentTurn)
             { 
@@ -196,13 +196,13 @@ public class CubeTurnsPerformer : MonoBehaviour
             Quaternion targetRot = initialRot;
 
             currentStep++;
-            if (currentStep >= _levelDesc.CubeTurnSequence.Length)
+            if (currentStep >= _cubeTurnSequence.Length)
             {
                 GameDelegatesContainer.EventCubeArrivedAtDestination();
                 yield break;
             }
 
-            CubeTurnType currentTurn = _levelDesc.CubeTurnSequence[currentStep];
+            CubeTurnType currentTurn = _cubeTurnSequence[currentStep];
             
             switch (currentTurn)
             { 
